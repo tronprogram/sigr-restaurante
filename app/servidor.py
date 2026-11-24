@@ -12,7 +12,7 @@ from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 from app import __version__
 
-PATRON_CORREO = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+PATRON_CORREO = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
 PATRON_FECHA = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 PATRON_HORA = re.compile(r"^\d{2}:\d{2}$")
 
@@ -55,7 +55,7 @@ def crear_app():
         ocupadas = mesas_ocupadas(fecha, hora)
         if mesa_solicitada:
             mesa_obj = next((m for m in MESAS_BASE if m["id"] == mesa_solicitada), None)
-            if not mesa_obj or mesa_obj["capacidad"] < personas:
+            if not mesa_obj or mesa_obj["capacidad"] < personas or mesa_solicitada in ocupadas:
                 return None
             return mesa_solicitada
         candidatas = sorted(
