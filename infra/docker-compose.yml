@@ -1,0 +1,49 @@
+services:
+  jenkins:
+    build: ./jenkins
+    image: jenkins-python:lts
+    container_name: jenkins
+    restart: unless-stopped
+    user: root                  # SOLO laboratorio: permite usar el socket de Docker del host
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock   # Jenkins construye y despliega contenedores
+    environment:
+      - TZ=America/Bogota
+      - JAVA_OPTS=-Duser.timezone=America/Bogota
+    networks: [ci]
+
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+    networks: [ci]
+
+  selenium:
+    image: selenium/standalone-chromium:latest
+    container_name: selenium
+    restart: unless-stopped
+    shm_size: "2gb"
+    ports:
+      - "4444:4444"   # Selenium Grid
+      - "7900:7900"   # ver el navegador en vivo: http://localhost:7900 (clave: secret)
+    networks: [ci]
+
+volumes:
+  jenkins_home:
+  sonar_data:
+  sonar_extensions:
+  sonar_logs:
+
+networks:
+  ci:
+    name: ci        # nombre fijo: el pipeline conecta aqui los contenedores de la app

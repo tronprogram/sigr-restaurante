@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block titulo %}Pedidos en Linea | SIGR{% endblock %}
+{% block contenido %}
+<h1>Pedidos en Linea</h1>
+
+{% if confirmacion %}
+<div class="exito" id="confirmacion-pedido">
+  Pedido creado: <strong>{{ confirmacion.codigo }}</strong> &mdash; Total: <strong>${{ confirmacion.total }}</strong> ({{ confirmacion.estado }})
+</div>
+{% endif %}
+
+{% if errores.get("items") %}
+<div class="error" id="err-items">{{ errores.items }}</div>
+{% endif %}
+
+<form method="post" id="form-pedido">
+  <label for="cliente">Cliente</label>
+  <input id="cliente" name="cliente" value="{{ valores.cliente }}" required>
+  {% if errores.get("cliente") %}<div class="error" id="err-cliente">{{ errores.cliente }}</div>{% endif %}
+
+  <label for="tipo">Modalidad</label>
+  <select id="tipo" name="tipo">
+    <option value="mesa" {% if valores.tipo == "mesa" %}selected{% endif %}>En mesa</option>
+    <option value="domicilio" {% if valores.tipo == "domicilio" %}selected{% endif %}>Domicilio</option>
+  </select>
+
+  <label for="plato">Plato</label>
+  <select id="plato" name="plato">
+    {% for clave, info in menu.items() %}
+    <option value="{{ clave }}" {% if valores.plato == clave %}selected{% endif %}>{{ info.nombre }} (${{ info.precio }})</option>
+    {% endfor %}
+  </select>
+
+  <label for="cantidad">Cantidad</label>
+  <input id="cantidad" name="cantidad" type="number" min="1" max="20" value="{{ valores.cantidad }}" required>
+
+  <button type="submit" id="btn-ordenar">Enviar pedido</button>
+</form>
+
+<h2>Cola de cocina</h2>
+<table id="tabla-pedidos">
+  <thead>
+    <tr><th>Codigo</th><th>Cliente</th><th>Tipo</th><th>Total</th><th>Estado</th></tr>
+  </thead>
+  <tbody>
+  {% for p in pedidos %}
+    <tr>
+      <td class="col-codigo">{{ p.codigo }}</td>
+      <td>{{ p.cliente }}</td>
+      <td>{{ p.tipo }}</td>
+      <td>${{ p.total }}</td>
+      <td>{{ p.estado }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="5">Sin pedidos aun.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

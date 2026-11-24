@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titulo %}Reservas de Mesas | SIGR{% endblock %}
+{% block contenido %}
+<h1>Reservas de Mesas</h1>
+
+{% if confirmacion %}
+<div class="exito" id="confirmacion">
+  Reserva confirmada: <strong>{{ confirmacion.codigo }}</strong> &mdash; Mesa asignada: <strong>{{ confirmacion.mesa }}</strong>
+</div>
+{% endif %}
+
+{% if errores.get("mesa") %}
+<div class="error" id="err-mesa">{{ errores.mesa }}</div>
+{% endif %}
+
+<form method="post" id="form-reserva">
+  <label for="cliente">Nombre del cliente</label>
+  <input id="cliente" name="cliente" value="{{ valores.cliente }}" required>
+  {% if errores.get("cliente") %}<div class="error" id="err-cliente">{{ errores.cliente }}</div>{% endif %}
+
+  <label for="correo">Correo electronico</label>
+  <input id="correo" name="correo" value="{{ valores.correo }}" required>
+  {% if errores.get("correo") %}<div class="error" id="err-correo">{{ errores.correo }}</div>{% endif %}
+
+  <label for="fecha">Fecha</label>
+  <input id="fecha" name="fecha" type="date" value="{{ valores.fecha }}" required>
+  {% if errores.get("fecha") %}<div class="error" id="err-fecha">{{ errores.fecha }}</div>{% endif %}
+
+  <label for="hora">Hora</label>
+  <input id="hora" name="hora" type="time" value="{{ valores.hora }}" required>
+  {% if errores.get("hora") %}<div class="error" id="err-hora">{{ errores.hora }}</div>{% endif %}
+
+  <label for="personas">Personas (1 a 6)</label>
+  <input id="personas" name="personas" type="number" min="1" max="6" value="{{ valores.personas }}" required>
+  {% if errores.get("personas") %}<div class="error" id="err-personas">{{ errores.personas }}</div>{% endif %}
+
+  <button type="submit" id="btn-reservar">Confirmar reserva</button>
+</form>
+
+<h2>Reservas registradas</h2>
+<table id="tabla-reservas">
+  <thead>
+    <tr><th>Codigo</th><th>Cliente</th><th>Correo</th><th>Horario</th><th>Mesa</th><th>Estado</th></tr>
+  </thead>
+  <tbody>
+  {% for r in reservas %}
+    <tr>
+      <td>{{ r.codigo }}</td>
+      <td>{{ r.cliente }}</td>
+      <td class="col-correo">{{ r.correo }}</td>
+      <td>{{ r.fecha }} {{ r.hora }}</td>
+      <td>{{ r.mesa }}</td>
+      <td>{{ r.estado }}</td>
+    </tr>
+  {% else %}
+    <tr><td colspan="6">Sin reservas aun.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
