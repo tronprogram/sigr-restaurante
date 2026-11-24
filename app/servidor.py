@@ -55,7 +55,7 @@ def crear_app():
         ocupadas = mesas_ocupadas(fecha, hora)
         if mesa_solicitada:
             mesa_obj = next((m for m in MESAS_BASE if m["id"] == mesa_solicitada), None)
-            if not mesa_obj or mesa_obj["capacidad"] < personas or mesa_solicitada in ocupadas:
+            if not mesa_obj or mesa_obj["capacidad"] < personas:
                 return None
             return mesa_solicitada
         candidatas = sorted(
